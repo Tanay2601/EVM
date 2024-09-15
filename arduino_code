@@ -1,0 +1,266 @@
+#include <LiquidCrystal.h>
+
+LiquidCrystal lcd(11, 10, 9, 8, 7, 6);
+
+#define sw1 A0 // Button 1
+#define sw2 A1 // Button 2
+#define sw3 A2 // Button 3
+#define sw4 A3 // Button 4
+#define sw5 A4 // Button 5 for result
+
+int vote1 = 0;
+int vote2 = 0;
+int vote3 = 0;
+int vote4 = 0;
+
+byte customChar[] = {
+  B00100,
+  B01110,
+  B11111,
+  B00100,
+  B00100,
+  B00100,
+  B00100,
+  B00100
+};
+byte customChar2[] = {
+  B00100,
+  B01010,
+  B10001,
+  B11111,
+  B00100,
+  B00100,
+  B00101,
+  B00111
+};
+byte customChar3[] = {
+  B00000,
+  B01010,
+  B11111,
+  B11111,
+  B01110,
+  B00100,
+  B00000,
+  B00000
+};
+byte customChar4[] = {
+  B01110,
+  B01110,
+  B01110,
+  B00100,
+  B11111,
+  B00100,
+  B01010,
+  B10001
+};
+
+void setup() {
+  pinMode(sw1, INPUT);
+  pinMode(sw2, INPUT);
+  pinMode(sw3, INPUT);
+  pinMode(sw4, INPUT);
+  pinMode(sw5, INPUT);
+  pinMode(13, OUTPUT); // Red LED
+  pinMode(12, OUTPUT); // Green LED
+
+  lcd.begin(16, 2);
+  lcd.setCursor(0, 0);
+  lcd.print("ELECTRONIC  ");
+  lcd.setCursor(0, 1);
+  lcd.print("VOTING MACHINE ");
+  delay(3000);
+  digitalWrite(sw1, HIGH);
+  digitalWrite(sw2, HIGH);
+  digitalWrite(sw3, HIGH);
+  digitalWrite(sw4, HIGH);
+  digitalWrite(sw5, HIGH);
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("ARW");
+  lcd.createChar(0, customChar); 
+  lcd.setCursor(1, 1); 
+  lcd.write((byte)0);
+  lcd.setCursor(4, 0);
+  lcd.print("UMB");
+  lcd.createChar(1, customChar2); 
+  lcd.setCursor(5, 1); 
+  lcd.write((byte)1);
+  lcd.setCursor(8, 0);
+  lcd.print("HRT");
+  lcd.createChar(2, customChar3); 
+  lcd.setCursor(9, 1); 
+  lcd.write((byte)2);
+  lcd.setCursor(12, 0);
+  lcd.print("MAN");
+  lcd.createChar(3, customChar4); 
+  lcd.setCursor(13, 1); 
+  lcd.write((byte)3);
+}
+
+void loop() {
+  if (digitalRead(sw1) == LOW && vote4==1) {
+    lcd.clear();
+    lcd.print("Thanks for");
+    lcd.setCursor(0, 1);
+    lcd.print("voting ARW");
+    delay(1000);
+    vote1++;
+    vote4--;
+    lcd.clear();
+    lcd.print("Total votes cast");
+    lcd.setCursor(7, 1);
+    lcd.print((vote1)+(vote2)+(vote3)+(vote4));
+    delay(1000);
+    digitalWrite(12, HIGH);
+    delay(1000);
+    while (digitalRead(sw1) == LOW);
+    digitalWrite(12, LOW);
+    showPartyOptions();
+  }
+
+  if (digitalRead(sw2) == LOW && vote4==1) {
+    lcd.clear();
+    lcd.print("Thanks for");
+    lcd.setCursor(0, 1);
+    lcd.print("voting UMB");
+    delay(1000);
+    vote2++;
+    vote4--;
+    lcd.clear();
+    lcd.print("Total votes cast");
+    lcd.setCursor(7, 1);
+    lcd.print((vote1)+(vote2)+(vote3)+(vote4));
+    delay(1000);
+    digitalWrite(12, HIGH);
+    delay(1000);
+    while (digitalRead(sw2) == LOW);
+    digitalWrite(12, LOW);
+    showPartyOptions();
+  }
+
+  if (digitalRead(sw3) == LOW && vote4==1) {
+    lcd.clear();
+    lcd.print("Thanks for");
+    lcd.setCursor(0, 1);
+    lcd.print("voting HRT");
+    delay(1000);
+    vote3++;
+    vote4--;
+    lcd.clear();
+    lcd.print("Total votes cast");
+    lcd.setCursor(7, 1);
+    lcd.print((vote1)+(vote2)+(vote3)+(vote4));
+    delay(1000);
+    digitalWrite(12, HIGH);
+    delay(1000);
+    while (digitalRead(sw3) == LOW);
+    digitalWrite(12, LOW);
+    showPartyOptions();
+  }
+
+  if (digitalRead(sw4) == LOW) {
+    
+    vote4++;
+    lcd.clear();
+    lcd.print("Total votes cast");
+    lcd.setCursor(7, 1);
+    lcd.print((vote1)+(vote2)+(vote3)+(vote4));
+    delay(1000);
+    digitalWrite(12, HIGH);
+    delay(1000);
+    while (digitalRead(sw4) == LOW);
+    digitalWrite(12, LOW);
+    showPartyOptions();
+  }
+
+  if (digitalRead(sw5) == LOW) {
+    digitalWrite(13, HIGH);
+    lcd.clear();
+    determineWinner();
+    delay(3000);
+    lcd.clear();
+    lcd.setCursor(0, 0);
+    lcd.print("ARW");
+    lcd.setCursor(1, 1);
+    lcd.print(vote1);
+    lcd.setCursor(3, 0);
+    lcd.print(" UMB");
+    lcd.setCursor(5, 1);
+    lcd.print(vote2);
+    lcd.setCursor(7, 0);
+    lcd.print(" HRT");
+    lcd.setCursor(9,1);
+    lcd.print(vote3);
+    lcd.setCursor(11, 0);
+    lcd.print(" MAN ");
+    lcd.setCursor(13, 1);
+    lcd.print(vote4);
+    delay(4000);
+    lcd.clear();
+    lcd.setCursor(3, 0);
+    lcd.print("Thanks for");
+    lcd.setCursor(5,1);
+    lcd.print("Voting!");
+    delay(4000);
+    resetVotes();
+    showPartyOptions();
+  }
+}
+
+void showPartyOptions() {
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("ARW");
+   lcd.createChar(0, customChar); 
+  lcd.setCursor(1, 1); 
+  lcd.write((byte)0);
+  lcd.setCursor(4, 0);
+  lcd.print("UMB");
+  lcd.createChar(1, customChar2); 
+  lcd.setCursor(5, 1); 
+  lcd.write((byte)1);
+  lcd.setCursor(8, 0);
+  lcd.print("HRT");
+  lcd.createChar(2, customChar3); 
+  lcd.setCursor(9, 1); 
+  lcd.write((byte)2);
+  lcd.setCursor(12, 0);
+  lcd.print("MAN");
+  lcd.createChar(3, customChar4); 
+  lcd.setCursor(13, 1); 
+  lcd.write((byte)3);
+}
+
+void determineWinner() {
+  int totalVotes = vote1 + vote2 + vote3 + vote4;
+  lcd.clear();
+  if (totalVotes > 0) {
+    if (vote1 > vote2 && vote1 > vote3 && vote1 > vote4) {
+      lcd.print("Arrow Wins!");
+    } else if (vote2 > vote1 && vote2 > vote3 && vote2 >vote4) {
+      lcd.print("Umbrella Wins!");
+    } else if (vote3 > vote1 && vote3 > vote2 && vote3 > vote4) {
+      lcd.print("Heart Wins!");
+    } else if(vote4 > vote1 && vote4 > vote2 && vote4 > vote3) {
+      lcd.print("Mankind Wins!");
+    }
+     else {
+        lcd.print("Tie Up Or");
+        lcd.setCursor(0, 1);
+        lcd.print("No Result");
+      }
+    }else {
+      lcd.clear();
+      lcd.setCursor(0, 0);
+      lcd.print("No Voting....");
+    }
+}
+
+void resetVotes() {
+  vote1 = 0;
+  vote2 = 0;
+  vote3 = 0;
+  vote4 = 0;
+  digitalWrite(12, LOW);
+  digitalWrite(13, LOW);
+}
